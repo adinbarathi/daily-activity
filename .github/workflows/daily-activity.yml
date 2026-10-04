@@ -1,0 +1,50 @@
+name: Daily Activity
+
+on:
+  schedule:
+    # Runs everyday at 06:00 UTC (11:30 AM IST)
+    - cron: '0 6 * * *'
+  workflow_dispatch: # Allows manual trigger anytime from GitHub Actions tab
+
+jobs:
+  auto-commit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate daily commits
+        run: |
+          # Git author configuration
+          # NOTE: The email must match your registered GitHub account email
+          git config --global user.name "${{ vars.COMMIT_USER_NAME || github.actor }}"
+          git config --global user.email "${{ vars.COMMIT_USER_EMAIL || 'your-email@example.com' }}"
+
+          # Pick a random number of commits between 10 and 30
+          COMMITS_COUNT=$(( RANDOM % 21 + 10 ))
+          echo "Generating $COMMITS_COUNT commits for today..."
+
+          MESSAGES=(
+            "chore: sync metric telemetry"
+            "docs: update maintenance log"
+            "refactor: optimize routine cache"
+            "fix: adjust index calculation offset"
+            "style: reformat structure and lint rules"
+            "test: verify edge cases in pipeline"
+            "perf: enhance data indexing throughput"
+            "build: refresh dependency tree"
+          )
+
+          for i in $(seq 1 $COMMITS_COUNT); do
+            RANDOM_MSG=${MESSAGES[$RANDOM % ${#MESSAGES[@]}]}
+            echo "$(date -u '+%Y-%m-%dT%H:%M:%SZ') - iteration $i" >> activity.log
+            git add activity.log
+            git commit -m "$RANDOM_MSG #$i"
+          done
+
+          git push origin main
