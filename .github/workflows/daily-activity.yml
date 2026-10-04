@@ -20,10 +20,9 @@ jobs:
 
       - name: Generate daily commits
         run: |
-          # Git author configuration
-          # NOTE: The email must match your registered GitHub account email
-          git config --global user.name "${{ vars.COMMIT_USER_NAME || github.actor }}"
-          git config --global user.email "${{ vars.COMMIT_USER_EMAIL || 'your-email@example.com' }}"
+          # Git author configuration (linked to GitHub profile for green squares)
+          git config --global user.name "${{ vars.COMMIT_USER_NAME || 'adinbarathi' }}"
+          git config --global user.email "${{ vars.COMMIT_USER_EMAIL || '258149471+adinbarathi@users.noreply.github.com' }}"
 
           # Pick a random number of commits between 10 and 30
           COMMITS_COUNT=$(( RANDOM % 21 + 10 ))
